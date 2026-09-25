@@ -1,0 +1,25 @@
+services:
+  trail-share:
+    build: .
+    image: hike-trail-share:latest
+    container_name: hike-trail-share
+    ports:
+      - "8000:8000"
+    environment:
+      # Host port mapping above determines the published port.
+      PORT: "8000"
+      DATA_DIR: "/data"
+      # Session expiry (seconds) and max upload size (MB).
+      SESSION_TTL_SECONDS: "10800"
+      MAX_UPLOAD_MB: "20"
+    volumes:
+      - trail-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/healthz')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  trail-data:

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>徒步轨迹遮蔽分享</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>🥾 徒步轨迹遮蔽分享</h1>
+    <span class="subtitle">无底图预览 · 按半径遮蔽敏感地点 · 导出互不连接的 GPX 分段</span>
+  </header>
+
+  <main class="layout">
+    <aside class="panel">
+      <section class="card">
+        <h2>1. 上传 GPX</h2>
+        <form id="upload-form">
+          <input type="file" id="file-input" accept=".gpx,application/gpx+xml" />
+          <button type="submit" id="upload-btn">上传并预览</button>
+        </form>
+        <p id="upload-info" class="hint" aria-live="polite"></p>
+      </section>
+
+      <section class="card" id="circle-card" hidden>
+        <h2>2. 设定遮蔽点</h2>
+        <p class="hint">在左侧/下方预览图上<strong>点击</strong>轨迹附近位置即可添加遮蔽圆心（靠近轨迹会自动吸附）。可拖动圆点移动，或修改半径。</p>
+        <ul id="circle-list" class="circle-list"></ul>
+        <div class="row">
+          <label>新点默认半径 (m)
+            <input type="number" id="default-radius" min="5" max="100000" step="5" value="50" />
+          </label>
+        </div>
+        <div class="row buttons">
+          <button id="clip-btn" class="primary">应用裁切</button>
+          <button id="clear-btn" class="ghost">清空遮蔽点</button>
+        </div>
+      </section>
+
+      <section class="card" id="result-card" hidden>
+        <h2>3. 裁切结果</h2>
+        <dl class="stats">
+          <div><dt>隐藏段数</dt><dd id="stat-hidden">–</dd></div>
+          <div><dt>裁切前距离</dt><dd id="stat-before">–</dd></div>
+          <div><dt>裁切后距离</dt><dd id="stat-after">–</dd></div>
+          <div><dt>移除距离</dt><dd id="stat-removed">–</dd></div>
+          <div><dt>导出 trkseg 数</dt><dd id="stat-segs">–</dd></div>
+        </dl>
+        <button id="download-btn" class="primary wide">下载裁切后 GPX</button>
+      </section>
+    </aside>
+
+    <section class="map-wrap">
+      <div class="map-toolbar">
+        <span id="map-status" class="hint">请先上传 GPX 文件。</span>
+        <span id="coord-readout" class="coord"></span>
+      </div>
+      <svg id="map" viewBox="0 0 1000 680" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e6e9ee" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect x="0" y="0" width="1000" height="680" fill="url(#grid)" class="map-bg"/>
+        <g id="layer-hidden"></g>
+        <g id="layer-original"></g>
+        <g id="layer-visible"></g>
+        <g id="layer-circles"></g>
+        <g id="scalebar"></g>
+      </svg>
+      <p class="hint legend">
+        <span class="swatch original"></span>原始轨迹
+        <span class="swatch visible"></span>可见轨迹
+        <span class="swatch hidden"></span>隐藏轨迹
+        <span class="swatch circle"></span>遮蔽圆
+      </p>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
